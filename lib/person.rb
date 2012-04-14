@@ -6,21 +6,31 @@ class Person
   attribute_method_prefix 'clear_'
   define_attribute_methods ['name']
 
-  def initialize(attrs={})
+  attr_accessor :name
+
+  def initialize(attrs=defaults)
     self.attributes= attrs
   end
 
-  attr_accessor :name
+  def attributes= attrs
+    defaults.merge(attrs).each { |k, v| send("#{k}=", v) }
+  end
 
   def attributes
-    { 'name' => self.name }
+    { name: name
+    }.stringify_keys
+  end
+
+  private
+
+  def defaults
+    { name: 'Default Name'
+    }.stringify_keys
   end
 
   def attributes= attrs
     attrs.each { |k, v| send("#{k}=", v) }
   end
-
-  private
 
   def attribute_contrived?(attr)
     true
@@ -31,6 +41,6 @@ class Person
   end
 
   def reset_attribute_to_default!(attr)
-    send("#{attr}=", "Default Name")
+    send("#{attr}=", defaults[attr])
   end
 end
